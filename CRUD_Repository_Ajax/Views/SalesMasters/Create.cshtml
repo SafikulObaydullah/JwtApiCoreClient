@@ -1,0 +1,323 @@
+﻿
+@{
+    ViewData["Title"] = "Create";
+}
+<style>
+    span.error{
+        display:block;
+        visibility:hidden;
+        color:red;
+        font-size:90%;
+    }
+    tr.error{
+        background-color:rgba(255,0,0,0.35);
+    }
+    .remove{
+        background-color:rgba(255,2,2,2.35);
+        color:red;
+    }
+</style>
+<h1>Create</h1>
+
+<h4>SalesMaster</h4>
+<hr />
+<div class="row">
+    <div class="col-md-12">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label  class="control-label">Invoice No</label>
+                <input class="form-control" id="InvoiceNO" />
+                <span  class="text-danger error"></span>
+            </div>
+            <div class="form-group">
+                <label  class="control-label">SalesDate</label>
+                <input class="form-control"  id="SalesDate" />
+                <span  class="text-danger error"></span>
+            </div>
+           @* <div class="form-group">
+                <label asp-for="TotalPrice" class="control-label"></label>
+                <input asp-for="TotalPrice" class="form-control" />
+                <span asp-validation-for="TotalPrice" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="TotalQty" class="control-label"></label>
+                <input asp-for="TotalQty" class="form-control" />
+                <span asp-validation-for="TotalQty" class="text-danger"></span>
+            </div>*@
+            @*<div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>*@
+        </form>
+        <div class="details">
+        <h2>
+            Order items
+        </h2>
+        <table class="table table-responsive">
+            <tr>
+               
+                <td>Product</td>
+                <td>Quantity</td>
+                <td>Price</td>
+                <td>&nbsp;</td>
+            </tr>
+            <tr class="mycontainer" id="mainrow">
+               
+                <td>
+                    <select id="product" class="product form-control">
+                       
+                    </select>
+                    <span class="error">Select product</span>
+                </td>
+                <td>
+                    <input type="text" id="quantity" class="quantity form-control" />
+                    <span class="error">Valid quantity required</span>
+                </td>
+                <td>
+                    <input type="text" id="rate" class="rate form-control" />
+                    <span class="error">Valid rate required</span> 
+                </td>
+                <td>
+                    <input type="button" id="add" value="add" style="width:80px" class="btn btn-success" />
+                </td>
+            </tr>
+        </table>
+        <div id="orderItems">
+            <table class="table table-responsive" id="orderdetailsItems"></table>
+            <span id="orderItemError" style="color:red"></span>
+        </div>
+        <div style="padding:10px 0; text-align:right">
+            <input id="submit" type="button" value="Save Order" class="btn btn-warning" style="padding:10px 20px" />
+        </div>
+    </div>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+var pList = [];
+let unitPrice = 0.00;
+ $('#rate').prop("disabled", true);
+$(document).ready(function() {
+   
+    loadPrd();
+    
+    $('#add').click(function() {
+        //validation and add order items
+        var isAllValid = true;
+        if ($('#product').val() == "0") {
+            isAllValid = false;
+            $('#product').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#product').siblings('span.error').css('visibility', 'hidden');
+        }
+
+        if (!($('#quantity').val().trim() != '' && (parseInt($('#quantity').val()) || 0))) {
+            isAllValid = false;
+            $('#quantity').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#quantity').siblings('span.error').css('visibility', 'hidden');
+        }
+        if (!($('#rate').val().trim() != '' && !isNaN($('#rate').val().trim()))) {
+            isAllValid = false;
+            $('#rate').siblings('span.error').css('visibility', 'visible');
+        }
+        else {
+            $('#rate').siblings('span.error').css('visibility', 'hidden');
+        }
+        if (isAllValid) {
+            var $newRow = $('#mainrow').clone().removeAttr('id');
+                                            
+
+            $('.product', $newRow).val($('#product').val());
+
+            //Replace add button with remove button
+            $('#add', $newRow).addClass('remove').val('Remove').removeClass('btn-success').addClass('btn-primary');
+
+            //remove id attribute from new clone row
+            $('#product,#quantity,#rate,#add', $newRow).removeAttr('id');
+             //disable new clone row
+            $('#product,#quantity,#rate,#add', $newRow).prop("disabled", true);
+            $('span.error', $newRow).remove();
+            //append clone row
+            $('#orderdetailsItems').append($newRow);
+
+            //clear select data
+
+            $('#quantity,#rate').val('');
+            $('#orderItemError').empty();
+        }
+
+    })
+    //remove button click event
+    $('#orderdetailsItems').on('click', '.remove', function() {
+        $(this).parents('tr').remove();
+    });
+    $('#submit').click(function() {
+        var isAllValid = true;
+
+        //validate order items
+        $('#orderItemError').text('');
+        var list = [];
+        var errorItemCount = 0;
+        //$('#orderdetailsItems tbody tr').each(function (index, ele) {
+        $('#orderdetailsItems  tr').each(function(index, ele) {
+            if (
+                $('select.product', this).val() == "0" ||
+                (parseInt($('.quantity', this).val()) || 0) == 0 ||
+                $('.rate', this).val() == "" ||
+                isNaN($('.rate', this).val())
+            ) {
+                errorItemCount++;
+                $(this).addClass('error');
+
+            }
+            else {
+                var salesDetail = {
+                    ProductID: $('select.product', this).val(),
+                    Qty: parseInt($('.quantity', this).val()),
+                    TotalPrice: parseFloat($('.rate', this).val())
+                }
+
+                list.push(salesDetail);
+                console.log(list.length)
+                console.log("Here")
+                console.log(salesDetail)
+            }
+
+        })
+
+
+        console.log(list.length)
+        if (errorItemCount > 0) {
+            $('#orderItemError').text(errorItemCount + " invalid entry in order item list.");
+            isAllValid = false;
+        }
+
+        if (list.length == 0) {
+            $('#orderItemError').text('At least 1 order item required.');
+            isAllValid = false;
+        }
+
+        if ($('#InvoiceNO').val().trim() == '') {
+            $('#InvoiceNO').siblings('span.error').css('visibility', 'visible');
+            isAllValid = false;
+        }
+        else {
+            $('#InvoiceNO').siblings('span.error').css('visibility', 'hidden');
+        }
+
+        if ($('#SalesDate').val().trim() == '') {
+            $('#SalesDate').siblings('span.error').css('visibility', 'visible');
+            isAllValid = false;
+        }
+        else {
+            $('#SalesDate').siblings('span.error').css('visibility', 'hidden');
+        }
+
+        if (isAllValid) {
+
+            var output = {
+                InvoiceNO: $("#InvoiceNO").val(),
+                SalesDate: $("#SalesDate").val(),
+                SalesDetails: list
+            }
+            console.log(output)
+            $(this).val('Please wait...');
+            $.ajax({
+                type: "POST",
+                url: "/SalesMasters/save",
+                //url: "/SalesMasters/Create",
+                dataType: "json",
+                data: output,
+                success: function(data) {
+                    console.log("Success")
+                    console.log(data)
+                    if (data.isSuccess) {
+                        //alert(data.messsage);
+                        //here we will clear the form
+                        list = [];
+                        $('#orderNo,#orderDate,#description').val('');
+                        $('#orderdetailsItems').empty();
+                        window.location.href = "/SalesMasters/Index";
+                    }
+                    else {
+                        //alert(data.messsage);
+                    }
+                    $('#submit').val('Save');
+                },
+                error: function(err) {
+                    console.log(err.responseText);
+                    $('#submit').val('Save');
+                }
+            });
+        }
+
+    });
+     $("#quantity").on("input", function(){
+         // Print entered value in a div box
+        $("#rate").val(($("#quantity").val()*unitPrice));
+         $('#rate').prop("disabled", true);
+    });//quantity
+    $("#product").on("change", function(){
+        let i = $("#product").val();
+
+        alert(i)
+         // Print entered value in a div box
+       console.log($('select.product', this).val())
+            $.ajax({
+                type: "POST",
+                url: "/Product/GetUnitPriceByPid?pid="+i,
+                data: '{}',
+                success: function (response) {
+                    $("#rate").val(response);
+                    console.log($("#rate").val())
+                    unitPrice = response;
+                    $('#rate').prop("disabled", true);
+         console.log(response)
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });
+    });//product
+});//document ready
+    
+function loadPrd() {
+          var ddlCustomers = $("#product");
+            ddlCustomers.empty().append('<option selected="selected" value="0" disabled = "disabled">Loading.....</option>');
+            $.ajax({
+                type: "POST",
+                url: "/Product/getProducts",
+                data: '{}',
+                success: function (response) {
+                    ddlCustomers.empty().append('<option selected="selected" value="0">Please select</option>');
+                    $.each(response, function (i,v) {
+                        ddlCustomers.append($("<option></option>").val(v.value).html(v.text));
+                        console.log(v.value)
+                        console.log(v.text)
+
+                    });
+                    pList = response;
+                    console.log(pList);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                }
+            });        
+}
+    </script>
+}

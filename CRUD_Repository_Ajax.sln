@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.2.32519.379
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CRUD_Repository_Ajax", "CRUD_Repository_Ajax\CRUD_Repository_Ajax.csproj", "{CF049DD2-6224-463E-9FE2-E42BA3887166}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "DemoJWTSwaggerData", "DemoJWTSwaggerData\DemoJWTSwaggerData\DemoJWTSwaggerData.csproj", "{FB15A573-B5D6-4AF9-B5D3-627700A8E594}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CF049DD2-6224-463E-9FE2-E42BA3887166}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CF049DD2-6224-463E-9FE2-E42BA3887166}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CF049DD2-6224-463E-9FE2-E42BA3887166}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CF049DD2-6224-463E-9FE2-E42BA3887166}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FB15A573-B5D6-4AF9-B5D3-627700A8E594}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FB15A573-B5D6-4AF9-B5D3-627700A8E594}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FB15A573-B5D6-4AF9-B5D3-627700A8E594}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FB15A573-B5D6-4AF9-B5D3-627700A8E594}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {F485E5F5-C155-4D4C-9CB7-BA4CEC3229F4}
+	EndGlobalSection
+EndGlobal
